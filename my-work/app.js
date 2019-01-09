@@ -1,18 +1,12 @@
 // d3.csv('../data/cities.csv', data => console.log(data));
-d3.csv('../data/cities.csv', (error, data) => {
-  if (error) {
-    console.error(error);
-  } else {
-    dataViz(data);
-  }
-});
 
-function dataViz(incomingData) {
-  d3.select('body')
-    .selectAll('div.cities')
-    .data(incomingData)
-    .enter()
-    .append('div')
-    .attr('class', 'cities')
-    .html(d => d.label);
-}
+d3.select('svg')
+  .selectAll('rect')
+  .data([15, 50, 22, 8, 100, 10])
+  .enter()
+  .append('rect')
+  .attr('width', 10)
+  .attr('height', d => d)
+  .style('opacity', 0.25)
+  .attr('x', (d, i) => i * 10)
+  .attr('y', (d, i) => 100 - d);
