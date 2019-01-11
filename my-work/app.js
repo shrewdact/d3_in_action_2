@@ -91,8 +91,9 @@ function overallTeamViz(incomingData) {
     var maxValue = d3.max(incomingData, d => parseFloat(d[datapoint]));
 
     var tenColorScale = d3.scaleOrdinal()
-    .domain(['UEFA', 'CONMEBOL', "CAF", "AFC"])
+    .domain(['UEFA', 'CONMEBOL'])
     .range(d3.schemeCategory10)
+    .unknown('#c4b9ac')
 
     var radiusScale = d3
       .scaleLinear()
