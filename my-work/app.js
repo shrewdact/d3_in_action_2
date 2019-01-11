@@ -96,7 +96,7 @@ function overallTeamViz(incomingData) {
 
     var ybRamp = d3
       .scaleLinear()
-      .interpolate(d3.interpolateHsl)
+      .interpolate(d3.interpolateHcl)
       .domain([0, maxValue])
       .range(['blue', 'yellow']);
 
