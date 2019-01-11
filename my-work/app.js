@@ -1,73 +1,74 @@
-// d3.csv('../data/cities.csv', data => console.log(data));
-// d3.csv('../data/cities.csv', (error, data) => dataViz(data));
-d3.json('../data/tweets.json', (error, data) => {
-  console.log(data);
-  dataViz(data.tweets);
-});
-
-d3.selectAll('g').data([0,1,2,3]).exit().remove();
-
-/* function dataViz(incomingData) {
-  incomingData.forEach(d => {
-    d.impact = d.favorites.length + d.retweets.length;
-    d.tweetTime = new Date(d.timestamp);
+function createSoccerViz() {
+  d3.csv('../data/worldcup.csv', data => {
+    overallTeamViz(data);
   });
+}
 
-  var maxImpact = d3.max(incomingData, d => d.impact);
-  var startEnd = d3.extent(incomingData, d => d.tweetTime);
-
-  var timeRamp = d3
-    .scaleTime()
-    .domain(startEnd)
-    .range([20, 480]);
-
-  var yScale = d3
-    .scaleLinear()
-    .domain([0, maxImpact])
-    .range([0, 460]);
-
-  var radiusScale = d3
-    .scaleLinear()
-    .domain([0, maxImpact])
-    .range([1, 20]);
-
-  var colorScale = d3
-    .scaleLinear()
-    .domain([0, maxImpact])
-    .range(['white', '#75739F']);
-
-  var tweetG = d3
-    .select('svg')
+function overallTeamViz(incomingData) {
+  d3.select('svg')
+    .append('g')
+    .attr('id', 'teamG')
+    .attr('transform', 'translate(50, 300)')
     .selectAll('g')
     .data(incomingData)
     .enter()
     .append('g')
-    .attr(
-      'transform',
-      d =>
-        'translate(' +
-        timeRamp(d.tweetTime) +
-        ',' +
-        (480 - yScale(d.impact)) +
-        ')'
-    );
+    .attr('class', 'overallG')
+    .attr('transform', (d, i) => 'translate(' + i * 50 + ', 0)');
+  var teamG = d3.selectAll('g.overallG');
 
-  tweetG
+  teamG
     .append('circle')
-    .attr('r', d => radiusScale(d.impact))
-    .style('fill', '#75739F')
-    .style('stroke', 'black')
-    .style('stroke-width', '1px');
+    .attr('r', 0)
+    .transition()
+    .delay((d, i) => i * 100)
+    .duration(500)
+    .attr('r', 40)
+    .transition()
+    .duration(500)
+    .attr('r', 20);
 
-  tweetG.append('text').text(d => d.user + '-' + d.tweetTime.getHours());
-  // d3.select('svg')
-  //   .selectAll('circle')
-  //   .data(incomingData)
-  //   .enter()
-  //   .append('circle')
-  //   .attr('r', d => radiusScale(d.impact))
-  //   .attr('cx', d => timeRamp(d.tweetTime))
-  //   .attr('cy', d => 480 - yScale(d.impact))
-  //   .style('fill', d => colorScale(d.impact))
-  //   .style('stroke', 'black')
-  //   .style('stroke-width', '1px'); */
+  teamG
+    .append('text')
+    .attr('y', 30)
+    .text(d => d.team);
+
+  teamG.on('mouseover', highlightRegion);
+  teamG.on('mouseout', function() {
+    d3.selectAll('g.overallG')
+      .select('circle')
+      .classed('inactive', false)
+      .classed('active', false);
+  });
+
+  function highlightRegion(d) {
+    d3.selectAll('g.overallG')
+      .select('circle')
+      .attr('class', p => (p.region === d.region ? 'active' : 'inactive'));
+  }
+
+  const dataKeys = Object.keys(incomingData[0]).filter(
+    d => d !== 'team' && d !== 'region'
+  );
+
+  d3.select('#controls')
+    .selectAll('button.teams')
+    .data(dataKeys)
+    .enter()
+    .append('button')
+    .on('click', buttonClick)
+    .html(d => d);
+
+  function buttonClick(datapoint) {
+    var maxValue = d3.max(incomingData, d => parseFloat(d[datapoint]));
+    var radiusScale = d3
+      .scaleLinear()
+      .domain([0, maxValue])
+      .range([2, 20]);
+    d3.selectAll('g.overallG')
+      .select('circle')
+      .transition()
+      .duration(1000)
+      .attr('r', d => radiusScale(d[datapoint]));
+  }
+}
