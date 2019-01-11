@@ -37,8 +37,8 @@ function overallTeamViz(incomingData) {
   teamG.on('mouseover', highlightRegion);
   teamG.on('mouseout', unHighlight);
 
-  function highlightRegion(d) {
-    d3.select(this)
+  function highlightRegion(d, i) {
+    /*     d3.select(this)
       .select('text')
       .classed('active', true)
       .attr('y', 10);
@@ -49,6 +49,19 @@ function overallTeamViz(incomingData) {
           ? d3.select(this).classed('active', true)
           : d3.select(this).classed('inactive', true);
       });
+    this.parentElement.appendChild(this); */
+
+    var teamColor = d3.rgb('#75739F');
+    d3.select(this)
+      .select('text')
+      .classed('active', true)
+      .attr('y', 10);
+
+    d3.selectAll('g.overallG')
+      .select('circle')
+      .style('fill', p =>
+        p.region === d.region ? teamColor.darker(0.75) : teamColor.brighter(0.5)
+      );
     this.parentElement.appendChild(this);
   }
 
@@ -80,11 +93,21 @@ function overallTeamViz(incomingData) {
       .scaleLinear()
       .domain([0, maxValue])
       .range([2, 20]);
+    // d3.selectAll('g.overallG')
+    //   .select('circle')
+    //   .transition()
+    //   .duration(1000)
+    //   .attr('r', d => radiusScale(d[datapoint]));
+
+    var ybRamp = d3
+      .scaleLinear()
+      .domain([0, maxValue])
+      .range(['blue', 'yellow']);
+
     d3.selectAll('g.overallG')
       .select('circle')
-      .transition()
-      .duration(1000)
-      .attr('r', d => radiusScale(d[datapoint]));
+      .attr('r', d => radiusScale(d[datapoint]))
+      .style('fill', d => ybRamp(d[datapoint]));
   }
 
   d3.select('circle').each(function(d, i) {
