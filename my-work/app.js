@@ -89,21 +89,20 @@ function overallTeamViz(incomingData) {
 
   function buttonClick(datapoint) {
     var maxValue = d3.max(incomingData, d => parseFloat(d[datapoint]));
+
+    var tenColorScale = d3.scaleOrdinal()
+    .domain(['UEFA', 'CONMEBOL', "CAF", "AFC"])
+    .range(d3.schemeCategory10)
+
     var radiusScale = d3
       .scaleLinear()
       .domain([0, maxValue])
       .range([2, 20]);
 
-    var ybRamp = d3
-      .scaleLinear()
-      .interpolate(d3.interpolateLab)
-      .domain([0, maxValue])
-      .range(['blue', 'yellow']);
-
     d3.selectAll('g.overallG')
-      .select('circle')
-      .attr('r', d => radiusScale(d[datapoint]))
-      .style('fill', d => ybRamp(d[datapoint]));
+      .select('circle').transition().duration(1000)
+      .style('fill', p => tenColorScale(p.region))
+      .attr('r', d => radiusScale(d[datapoint]));
   }
 
   d3.select('circle').each(function(d, i) {
