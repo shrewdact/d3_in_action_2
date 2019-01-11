@@ -93,14 +93,10 @@ function overallTeamViz(incomingData) {
       .scaleLinear()
       .domain([0, maxValue])
       .range([2, 20]);
-    // d3.selectAll('g.overallG')
-    //   .select('circle')
-    //   .transition()
-    //   .duration(1000)
-    //   .attr('r', d => radiusScale(d[datapoint]));
 
     var ybRamp = d3
       .scaleLinear()
+      .interpolate(d3.interpolateHsl)
       .domain([0, maxValue])
       .range(['blue', 'yellow']);
 
