@@ -33,18 +33,33 @@ function overallTeamViz(incomingData) {
     .attr('y', 30)
     .text(d => d.team);
 
+  teamG.select('text').style('pointer-events', 'none');
   teamG.on('mouseover', highlightRegion);
-  teamG.on('mouseout', function() {
-    d3.selectAll('g.overallG')
-      .select('circle')
-      .classed('inactive', false)
-      .classed('active', false);
-  });
+  teamG.on('mouseout', unHighlight);
 
   function highlightRegion(d) {
+    d3.select(this)
+      .select('text')
+      .classed('active', true)
+      .attr('y', 10);
     d3.selectAll('g.overallG')
       .select('circle')
-      .attr('class', p => (p.region === d.region ? 'active' : 'inactive'));
+      .each(function(p) {
+        p.region == d.region
+          ? d3.select(this).classed('active', true)
+          : d3.select(this).classed('inactive', true);
+      });
+    this.parentElement.appendChild(this);
+  }
+
+  function unHighlight() {
+    d3.selectAll('g.overallG')
+      .select('circle')
+      .attr('class', '');
+    d3.selectAll('g.overallG')
+      .select('text')
+      .classed('active', false)
+      .attr('y', 30);
   }
 
   const dataKeys = Object.keys(incomingData[0]).filter(
@@ -71,4 +86,10 @@ function overallTeamViz(incomingData) {
       .duration(1000)
       .attr('r', d => radiusScale(d[datapoint]));
   }
+
+  d3.select('circle').each(function(d, i) {
+    console.log(d);
+    console.log(i);
+    console.log(this);
+  });
 }
