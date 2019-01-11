@@ -1,39 +1,73 @@
 // d3.csv('../data/cities.csv', data => console.log(data));
 // d3.csv('../data/cities.csv', (error, data) => dataViz(data));
 d3.json('../data/tweets.json', (error, data) => {
+  console.log(data);
   dataViz(data.tweets);
 });
 
-function dataViz(incomingData) {
+d3.selectAll('g').data([0,1,2,3]).exit().remove();
 
-  console.log(incomingData)
-  var nestedTweets = d3
-    .nest()
-    .key(d => d.user)
-    .entries(incomingData);
-
-  nestedTweets.forEach(d => {
-    d.numTweets = d.values.length;
+/* function dataViz(incomingData) {
+  incomingData.forEach(d => {
+    d.impact = d.favorites.length + d.retweets.length;
+    d.tweetTime = new Date(d.timestamp);
   });
-  var maxTweets = d3.max(nestedTweets, d => d.numTweets);
+
+  var maxImpact = d3.max(incomingData, d => d.impact);
+  var startEnd = d3.extent(incomingData, d => d.tweetTime);
+
+  var timeRamp = d3
+    .scaleTime()
+    .domain(startEnd)
+    .range([20, 480]);
 
   var yScale = d3
     .scaleLinear()
-    .domain([0, maxTweets])
-    .range([0, 500]);
+    .domain([0, maxImpact])
+    .range([0, 460]);
 
-  d3.select('svg').attr('style', 'height: 480px; width: 600px;');
+  var radiusScale = d3
+    .scaleLinear()
+    .domain([0, maxImpact])
+    .range([1, 20]);
 
-  d3.select('svg')
-    .selectAll('rect')
-    .data(nestedTweets)
+  var colorScale = d3
+    .scaleLinear()
+    .domain([0, maxImpact])
+    .range(['white', '#75739F']);
+
+  var tweetG = d3
+    .select('svg')
+    .selectAll('g')
+    .data(incomingData)
     .enter()
-    .append('rect')
-    .attr('width', 50)
-    .attr('height', d => yScale(d.numTweets))
-    .attr('x', (d, i) => i * 60)
-    .attr('y', d => 480 - yScale(d.numTweets))
-    .style('fill', '#FE9922')
-    .style('stroke', '#9A8B7A')
-    .style('stroke-width', '1px')
-}
+    .append('g')
+    .attr(
+      'transform',
+      d =>
+        'translate(' +
+        timeRamp(d.tweetTime) +
+        ',' +
+        (480 - yScale(d.impact)) +
+        ')'
+    );
+
+  tweetG
+    .append('circle')
+    .attr('r', d => radiusScale(d.impact))
+    .style('fill', '#75739F')
+    .style('stroke', 'black')
+    .style('stroke-width', '1px');
+
+  tweetG.append('text').text(d => d.user + '-' + d.tweetTime.getHours());
+  // d3.select('svg')
+  //   .selectAll('circle')
+  //   .data(incomingData)
+  //   .enter()
+  //   .append('circle')
+  //   .attr('r', d => radiusScale(d.impact))
+  //   .attr('cx', d => timeRamp(d.tweetTime))
+  //   .attr('cy', d => 480 - yScale(d.impact))
+  //   .style('fill', d => colorScale(d.impact))
+  //   .style('stroke', 'black')
+  //   .style('stroke-width', '1px'); */
