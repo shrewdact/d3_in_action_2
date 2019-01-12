@@ -1,13 +1,25 @@
+d3.html('../resources/icon_1907.svg', loadSVG);
+function loadSVG(svgData) {
+  d3.select(svgData)
+    .selectAll('path')
+    .each(function() {
+      d3.select('svg')
+        .node()
+        .appendChild(
+          d3
+            .select(svgData)
+            .select('path')
+            .node()
+        );
+      d3.selectAll('path').attr('transform', 'translate(50,50)');
+    });
+}
 var teamG;
 function createSoccerViz() {
   d3.csv('../data/worldcup.csv', data => {
     overallTeamViz(data);
   });
-
-  
 }
-
-
 
 function overallTeamViz(incomingData) {
   d3.select('svg')
@@ -126,7 +138,6 @@ function overallTeamViz(incomingData) {
     console.log(i);
     console.log(this);
   });
-
 
   d3.text('./infobox.html', html => {
     d3.select('body')
