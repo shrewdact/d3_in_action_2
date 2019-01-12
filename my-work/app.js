@@ -1,8 +1,13 @@
+var teamG;
 function createSoccerViz() {
   d3.csv('../data/worldcup.csv', data => {
     overallTeamViz(data);
   });
+
+  
 }
+
+
 
 function overallTeamViz(incomingData) {
   d3.select('svg')
@@ -15,7 +20,7 @@ function overallTeamViz(incomingData) {
     .append('g')
     .attr('class', 'overallG')
     .attr('transform', (d, i) => 'translate(' + i * 50 + ', 0)');
-  var teamG = d3.selectAll('g.overallG');
+  teamG = d3.selectAll('g.overallG');
 
   teamG
     .append('circle')
@@ -36,6 +41,14 @@ function overallTeamViz(incomingData) {
   teamG.select('text').style('pointer-events', 'none');
   teamG.on('mouseover', highlightRegion);
   teamG.on('mouseout', unHighlight);
+
+  teamG
+    .insert('image', 'text')
+    .attr('xlink:href', d => `../images/${d.team}.png`)
+    .attr('width', '45px')
+    .attr('height', '20px')
+    .attr('x', -22)
+    .attr('y', -10);
 
   function highlightRegion(d, i) {
     /*     d3.select(this)
@@ -90,10 +103,10 @@ function overallTeamViz(incomingData) {
   function buttonClick(datapoint) {
     var maxValue = d3.max(incomingData, d => parseFloat(d[datapoint]));
 
-    var tenColorScale = d3.scaleOrdinal()
-    .domain(['UEFA', 'CONMEBOL'])
-    .range(d3.schemeCategory10)
-    .unknown('#c4b9ac')
+    var colorQuantize = d3
+      .scaleQuantize()
+      .domain([0, maxValue])
+      .range(colorbrewer.Reds[3]);
 
     var radiusScale = d3
       .scaleLinear()
@@ -101,8 +114,10 @@ function overallTeamViz(incomingData) {
       .range([2, 20]);
 
     d3.selectAll('g.overallG')
-      .select('circle').transition().duration(1000)
-      .style('fill', p => tenColorScale(p.region))
+      .select('circle')
+      .transition()
+      .duration(1000)
+      .style('fill', d => colorQuantize(d[datapoint]))
       .attr('r', d => radiusScale(d[datapoint]));
   }
 
@@ -111,4 +126,19 @@ function overallTeamViz(incomingData) {
     console.log(i);
     console.log(this);
   });
+
+
+  d3.text('./infobox.html', html => {
+    d3.select('body')
+      .append('div')
+      .attr('id', 'infobox')
+      .html(html);
+  });
+
+  teamG.on('click', teamClick);
+  function teamClick(d) {
+    d3.selectAll('td.data')
+      .data(d3.values(d))
+      .html(p => p);
+  }
 }
