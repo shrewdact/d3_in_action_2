@@ -43,7 +43,7 @@ function lineChart(data) {
     .attr('r', 5)
     .attr('cx', d => xScale(d.day))
     .attr('cy', d => yScale(d.tweets))
-    .style('fill', blue);
+    .style('fill',orange);
 
   d3.select('svg')
     .selectAll('circle.retweets')
@@ -54,7 +54,7 @@ function lineChart(data) {
     .attr('r', 5)
     .attr('cx', d => xScale(d.day))
     .attr('cy', d => yScale(d.retweets))
-    .style('fill', green);
+    .style('fill', blue);
 
   d3.select('svg')
     .selectAll('circle.favorites')
@@ -65,5 +65,17 @@ function lineChart(data) {
     .attr('r', 5)
     .attr('cx', d => xScale(d.day))
     .attr('cy', d => yScale(d.favorites))
-    .style('fill', orange);
+    .style('fill', green);
+
+  var tweetLine = d3
+    .line()
+    .x(d => xScale(d.day))
+    .y(d => yScale(d.tweets));
+
+  d3.select('svg')
+    .append('path')
+    .attr('d', tweetLine(data))
+    .attr('fill', 'none')
+    .attr('stroke', '#fe9a22')
+    .attr('stroke-width', 2);
 }
