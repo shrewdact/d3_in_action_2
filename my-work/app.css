@@ -1,16 +1,11 @@
-path.domain {
-  stroke: none;
-}
 .tick > line {
-  stroke: #ebd8c1;
+  stroke: #EBD8C1;
 }
 .tick > text {
-  fill: #ebd8c1;
+  fill: #EBD8C1;
 }
 
-path {
+path.domain {
+  stroke: none;
   fill: none;
-  stroke: #75739f;
-  stroke-width: 3;
-  opacity: 0.75;
 }

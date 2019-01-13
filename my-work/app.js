@@ -1,15 +1,21 @@
 d3.csv('../data/movies.csv', lineChart);
 
 function lineChart(data) {
-  const xScale = d3
+  var fillScale = d3
+    .scaleOrdinal()
+    .domain(['titanic', 'avatar', 'akira', 'frozen', 'deliverance', 'avengers'])
+    .range(['#fcd88a', '#cf7c1c', '#93c464', '#75734F', '#5eafc6', '#41a368']);
+
+  var xScale = d3
     .scaleLinear()
     .domain([1, 10])
     .range([20, 470]);
-  const yScale = d3
+  var yScale = d3
     .scaleLinear()
-    .domain([0, 40])
+    .domain([0, 55])
     .range([480, 20]);
-  const xAxis = d3
+
+  var xAxis = d3
     .axisBottom()
     .scale(xScale)
     .tickSize(480)
@@ -20,7 +26,7 @@ function lineChart(data) {
     .attr('id', 'xAxisG')
     .call(xAxis);
 
-  const yAxis = d3
+  var yAxis = d3
     .axisRight()
     .scale(yScale)
     .ticks(10)
@@ -31,23 +37,39 @@ function lineChart(data) {
     .attr('id', 'yAxisG')
     .call(yAxis);
 
+  var n = 0;
+
   Object.keys(data[0]).forEach(key => {
     if (key != 'day') {
       var movieArea = d3
         .area()
         .x(d => xScale(d.day))
-        .y0(d => yScale(d[key]))
-        .y1(d => yScale(-d[key]))
-        .curve(d3.curveCardinal);
+        .y0(d => yScale(simpleStacking(d, key) - d[key]))
+        .y1(d => yScale(simpleStacking(d, key)))
+        .curve(d3.curveBasis);
 
       d3.select('svg')
         .append('path')
-        // .attr('id', key + 'Area')
-        .attr('d', movieArea(data) + 'Z')
-        .attr('fill', 'gray')
-        .attr('stroke', '#75739F')
-        .attr('stroke-width', 3)
-        .attr('opacity', 0.75);
+        .style('id', `${key} Area`)
+        .attr('d', movieArea(data))
+        .attr('fill', fillScale(key))
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1);
+      n++;
     }
   });
+
+  function simpleStacking(lineData, lineKey) {
+    var newHeight = 0;
+    Object.keys(lineData).every(key => {
+      if (key !== 'day') {
+        newHeight += parseInt(lineData[key]);
+        if (key === lineKey) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return newHeight;
+  }
 }
