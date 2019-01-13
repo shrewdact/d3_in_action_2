@@ -1,16 +1,13 @@
-d3.csv('../data/tweetdata.csv', lineChart);
+d3.csv('../data/movies.csv', lineChart);
 
 function lineChart(data) {
-  const blue = '#5eaec5',
-    green = '#92c463',
-    orange = '#fe9a22';
   const xScale = d3
     .scaleLinear()
-    .domain([1, 10, 5])
-    .range([20, 480]);
+    .domain([1, 10])
+    .range([20, 470]);
   const yScale = d3
     .scaleLinear()
-    .domain([0, 35])
+    .domain([0, 40])
     .range([480, 20]);
   const xAxis = d3
     .axisBottom()
@@ -33,77 +30,22 @@ function lineChart(data) {
     .append('g')
     .attr('id', 'yAxisG')
     .call(yAxis);
-
-  d3.select('svg')
-    .selectAll('circle.tweets')
-    .data(data)
-    .enter()
-    .append('circle')
-    .attr('class', 'tweets')
-    .attr('r', 5)
-    .attr('cx', d => xScale(d.day))
-    .attr('cy', d => yScale(d.tweets))
-    .style('fill', orange);
-
-  d3.select('svg')
-    .selectAll('circle.retweets')
-    .data(data)
-    .enter()
-    .append('circle')
-    .attr('class', 'retweets')
-    .attr('r', 5)
-    .attr('cx', d => xScale(d.day))
-    .attr('cy', d => yScale(d.retweets))
-    .style('fill', blue);
-
-  d3.select('svg')
-    .selectAll('circle.favorites')
-    .data(data)
-    .enter()
-    .append('circle')
-    .attr('class', 'favorites')
-    .attr('r', 5)
-    .attr('cx', d => xScale(d.day))
-    .attr('cy', d => yScale(d.favorites))
-    .style('fill', green);
-
-  const lamdaXScale = d => xScale(d.day);
-
-  var tweetLine = d3
-    .line()
-    .x(lamdaXScale)
-    .y(d => yScale(d.tweets));
-
-  var retweetLine = d3
-    .line()
-    .x(lamdaXScale)
-    .y(d => yScale(d.retweets));
-
-  var favLine = d3
-    .line()
-    .x(lamdaXScale)
-    .y(d => yScale(d.favorites));
-
-  d3.select('svg')
-    .append('path')
-    .attr('d', tweetLine(data))
-    .attr('fill', 'none')
-    .attr('stroke', orange)
-    .attr('stroke-width', 2);
-
-
-	d3.select('svg')
-		.append('path')
-		.attr('d', retweetLine(data))
-		.attr('fill', 'none')
-		.attr('stroke',blue)
-		.attr('stroke-width', 2);
-
-	d3.select('svg')
-		.append('path')
-		.attr('d',favLine(data))
-		.attr('fill', 'none')
-		.attr('stroke', green)
-		.attr('stroke-width', 2);
-
+    
+  Object.keys(data[0]).forEach(key => {
+    if (key != 'day') {
+      var movieArea = d3
+        .line()
+        .x(d => xScale(d.day))
+        .y(d => yScale(d[key]))
+        .curve(d3.curveCardinal);
+      d3.select('svg')
+        .append('path')
+        .attr('id', key + 'Area')
+        .attr('d', movieArea(data))
+        .attr('fill', 'none')
+        .attr('stroke', '#75739F')
+        .attr('stroke-width', 3)
+        .attr('opacity', 0.75);
+    }
+  });
 }
