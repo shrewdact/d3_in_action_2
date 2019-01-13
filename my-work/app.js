@@ -1,49 +1,66 @@
-var scatterData = [
-  { friends: 5, salary: 22000 },
-  { friends: 3, salary: 18000 },
-  { friends: 10, salary: 88000 },
-  { friends: 0, salary: 180000 },
-  { friends: 27, salary: 56000 },
-  { friends: 8, salary: 74000 }
-];
+d3.csv('../data/boxplot.csv', scatterplot);
 
-var xExtent = d3.extent(scatterData, d => d.salary);
-var yExtent = d3.extent(scatterData, d => d.friends);
+function scatterplot(data) {
+  const tickSize = 470;
+  const xScale = d3
+    .scaleLinear()
+    .domain([1, 8])
+    .range([20, tickSize]);
 
-var xScale = d3
-  .scaleLinear()
-  .domain([0, 180000])
-  .range([0, 500]);
-var yScale = d3
-  .scaleLinear()
-  .domain([0, 27])
-  .range([0, 500]);
+  const yScale = d3
+    .scaleLinear()
+    .domain([0, 100])
+    .range([tickSize + 10, 20]);
 
-var xAxis = d3
-  .axisBottom()
-  .scale(xScale)
-  .tickSize(500)
-  .ticks(4);
-d3.select('svg')
-  .append('g')
-  .attr('id', 'xAxisG')
-  .call(xAxis);
+  const yAxis = d3
+    .axisRight()
+    .scale(yScale)
+    .ticks(8)
+    .tickSize(-tickSize);
 
-var yAxis = d3
-  .axisRight()
-  .scale(yScale)
-  .ticks(16)
-  .tickSize(500);
-d3.select('svg')
-  .append('g')
-  .attr('id', 'yAxisG')
-  .call(yAxis);
+  d3.select('svg')
+    .append('g')
+    .attr('transform', 'translate(470,0)')
+    .attr('id', 'yAxisG')
+    .call(yAxis);
 
-d3.select('svg')
-  .selectAll('circle')
-  .data(scatterData)
-  .enter()
-  .append('circle')
-  .attr('r', 5)
-  .attr('cx', d => xScale(d.salary))
-  .attr('cy', d => yScale(d.friends));
+  const xAxis = d3
+    .axisBottom()
+    .scale(xScale)
+    .tickSize(-tickSize)
+    .tickValues([1, 2, 3, 4, 5, 6, 7]);
+
+  d3.select('svg')
+    .append('g')
+    .attr('transform', 'translate(0, 480)')
+    .attr('id', 'xAxisG')
+    .call(xAxis);
+
+  d3.select('svg')
+    .selectAll('circle.median')
+    .data(data)
+    .enter()
+    .append('circle')
+    .attr('class', 'tweets')
+    .attr('r', 5)
+    .attr('cx', d => xScale(d.day))
+    .attr('cy', d => yScale(d.median))
+    .style('fill', 'darkgray');
+
+  d3.select('svg')
+    .selectAll('g.box')
+    .data(data)
+    .enter()
+    .append('g')
+    .attr('class', 'box')
+    .attr(
+      'transform',
+      d => 'translate(' + xScale(d.day) + ',' + yScale(d.median) + ')'
+    )
+    .each(function(d, i) {
+      d3.select(this)
+        .append('rect')
+        .attr('width', 20)
+        .attr('height', yScale(d.q1) - yScale(d.q3));
+    });
+}
