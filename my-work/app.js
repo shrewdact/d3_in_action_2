@@ -40,12 +40,15 @@ function lineChart(data) {
   var n = 0;
 
   var legendA = d3.legendColor().scale(fillScale);
+
+  legendA.orient('horizontal').shapePadding(60).shapeWidth(12).shapeHeight(30)
+
   d3.select('svg').style('width', '1000px');
   d3.select('svg')
     .append('g')
     .attr('transform', 'translate(500,0)')
     .call(legendA);
-    
+
   Object.keys(data[0]).forEach(key => {
     if (key != 'day') {
       var movieArea = d3
