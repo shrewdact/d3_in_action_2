@@ -30,19 +30,21 @@ function lineChart(data) {
     .append('g')
     .attr('id', 'yAxisG')
     .call(yAxis);
-    
+
   Object.keys(data[0]).forEach(key => {
     if (key != 'day') {
       var movieArea = d3
-        .line()
+        .area()
         .x(d => xScale(d.day))
-        .y(d => yScale(d[key]))
+        .y0(d => yScale(d[key]))
+        .y1(d => yScale(-d[key]))
         .curve(d3.curveCardinal);
+
       d3.select('svg')
         .append('path')
-        .attr('id', key + 'Area')
-        .attr('d', movieArea(data))
-        .attr('fill', 'none')
+        // .attr('id', key + 'Area')
+        .attr('d', movieArea(data) + 'Z')
+        .attr('fill', 'gray')
         .attr('stroke', '#75739F')
         .attr('stroke-width', 3)
         .attr('opacity', 0.75);
