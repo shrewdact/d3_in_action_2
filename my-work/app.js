@@ -32,9 +32,10 @@ function scatterplot(data) {
 
   d3.select('svg')
     .append('g')
-    .attr('transform', 'translate(0, 480)')
+    .attr('transform', `translate(0,${tickSize})`)
     .attr('id', 'xAxisG')
     .call(xAxis);
+  d3.select('#xAxisG > path.domain').style('display', 'none')
 
   d3.select('svg')
     .selectAll('g.box')
@@ -96,5 +97,6 @@ function scatterplot(data) {
         .attr('y2', 0)
         .style('stroke', 'darkgray')
         .style('stroke-width', '4px');
+
     });
 }
